@@ -1,0 +1,130 @@
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: cyan;
+    color: #000;
+
+    .nav-left {
+        display: flex;
+        align-items: center;
+        margin-left: 10%;
+
+        h1 {
+            margin-right: 20px;
+            font-family: 'Allerta Stencil', sans-serif;
+        }
+
+        ul {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            li {
+                margin-right: 20px;
+                position: relative;
+
+                &:hover .dropdown {
+                    display: block;
+                }
+
+                .dropdown {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    background-color: #fff;
+                    color: #000;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+                    li {
+                        padding: 10px;
+                        white-space: nowrap;
+                    }
+                }
+            }
+        }
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        margin-right: 10%;
+
+        // input[type="text"] {
+        //     padding: 5px 10px;
+        //     margin-right: 20px;
+        //     border: 1px solid #fff;
+        //     border-radius: 4px;
+        // }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #ccc;
+            background-color: cyan;
+            width: 100%;
+            margin: 0 10px;
+            position: relative;
+        }
+        
+        .search-icon {
+            margin-right: 5px;
+            color: #aaa;
+        }
+        
+        .search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: transparent;
+        }
+        
+        .search-input::placeholder {
+            color: transparent;
+            transition: all 0.3s ease;
+        }
+        
+        // .search-input:focus::placeholder {
+        //     transform: translateY(-20px);
+        //     font-size: 12px;
+        //     color: #aaa;
+        // }
+        
+        .search-input:focus ~ .placeholder-text,
+        .search-input:not(:placeholder-shown) ~ .placeholder-text {
+            transform: translateY(-20px);
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .placeholder-text {
+            position: absolute;
+            top: 10px;
+            left: 30px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .separator {
+            height: 20px;
+            border-left: 1px solid #ccc;
+            margin-right: 5px;
+        }
+
+        button {
+            padding: 5px 10px;
+            margin-right: 10px;
+            background-color: #fff;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    }
+}

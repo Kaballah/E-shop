@@ -1,0 +1,40 @@
+.products-page {
+    padding: 20px;
+
+    h2 {
+        margin-bottom: 20px;
+        font-family: 'Allerta Stencil', sans-serif;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+
+        .product {
+            background: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            text-align: center;
+
+            &:hover {
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            h3 {
+                margin: 10px 0;
+            }
+
+            p {
+                margin: 0;
+            }
+        }
+    }
+}

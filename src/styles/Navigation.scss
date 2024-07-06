@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@400;700&family=Overpass:wght@400;700&display=swap');
+@import url('https://fonts.cdnfonts.com/css/dune-rise');
+
 .navigation {
     display: flex;
     justify-content: space-between;
@@ -13,7 +16,7 @@
 
         h1 {
             margin-right: 20px;
-            font-family: 'Allerta Stencil', sans-serif;
+            font-family: 'Dune Rise', sans-serif;
         }
 
         ul {
@@ -22,27 +25,145 @@
             padding: 0;
             margin: 0;
 
-            li {
-                margin-right: 20px;
+            .nav-item {
+                margin-right: 15px;
                 position: relative;
+                font-family: 'Dosis', sans-serif;
+                font-size: 1.3rem;
+                text-decoration: none;
+                color: black;
+                cursor: pointer;
+            }
 
-                &:hover .dropdown {
-                    display: block;
+            .nav-link {
+                text-decoration: none;
+                color: black;
+                position: relative;
+                padding-bottom: 5px;
+            }
+              
+            .nav-link::after {
+                content: '';
+                display: block;
+                height: 2px;
+                background: white;
+                position: absolute;
+                bottom: -5px;
+                left: 50%;
+                width: 0;
+                transition: width 0.3s ease, left 0.3s ease;
+            }
+              
+            .nav-link:hover::after {
+                width: 100%;
+                left: 0;
+            }
+              
+            .nav-link.active::after {
+                width: 100%;
+                left: 0;
+            }
+              
+            .nav-link:hover {
+                color: #fff;
+            }
+
+            .nav-link-category:hover {
+                color: #fff;
+            }
+            
+            .category .dropdown {
+                display: none;
+                position: absolute;
+                top: 100%;
+                width: 20vw;
+                left: 0;
+                background-color: cyan;
+                color: #000;
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                z-index: 1;
+                animation: fadeIn 0.3s ease forwards;
+            }
+
+            .category .dropdown li {
+                padding: 10px;
+                white-space: nowrap;
+            }
+            
+            .category:hover .dropdown {
+                display: block;
+            }
+
+            .category li:hover .dropdown {
+                color: #fff;
+            }
+
+            .dropdown-item {
+                display: flex;
+                align-items: center;
+                padding: 20px;
+                transition: all 0.3s ease;
+                opacity: 0;
+                transform: translateX(-10px);
+                animation: slideIn 0.5s ease forwards;
+                animation-delay: calc(0.1s * var(--i));
+                color: black;
+            }
+              
+            .dropdown-item:hover {
+                background-color: cyan;
+                // color: white;
+            }
+              
+            .dropdown-icon {
+                margin-right: 10px;
+                margin-left: -20px;
+                opacity: 0;
+                position: absolute;
+                transform: translateX(-10px);
+                transition: all 0.3s ease;
+            }
+              
+            .dropdown-link {
+                text-decoration: none;
+                color: black;
+                padding-left: 0;
+                transition: all 0.3s ease;
+            }
+              
+            .dropdown-item:hover {
+                .dropdown-link {
+                    transform: translateX(30px);
+                    font-weight: 600;
+                }
+            }
+              
+            .dropdown-item:hover .dropdown-icon {
+                opacity: 1;
+                transform: translateX(20px);
+            }
+              
+            @keyframes fadeIn {
+                from {
+                  opacity: 0;
+                }
+                to {
+                  opacity: 1;
+                }
+            }
+              
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-10px);
                 }
 
-                .dropdown {
-                    display: none;
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    background-color: #fff;
-                    color: #000;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-                    li {
-                        padding: 10px;
-                        white-space: nowrap;
-                    }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
                 }
             }
         }
@@ -52,13 +173,6 @@
         display: flex;
         align-items: center;
         margin-right: 10%;
-
-        // input[type="text"] {
-        //     padding: 5px 10px;
-        //     margin-right: 20px;
-        //     border: 1px solid #fff;
-        //     border-radius: 4px;
-        // }
 
         .search-container {
             display: flex;
@@ -89,12 +203,6 @@
             transition: all 0.3s ease;
         }
         
-        // .search-input:focus::placeholder {
-        //     transform: translateY(-20px);
-        //     font-size: 12px;
-        //     color: #aaa;
-        // }
-        
         .search-input:focus ~ .placeholder-text,
         .search-input:not(:placeholder-shown) ~ .placeholder-text {
             transform: translateY(-20px);
@@ -103,6 +211,7 @@
         }
         
         .placeholder-text {
+            font-family: 'Dosis', sans-serif;
             position: absolute;
             top: 10px;
             left: 30px;
@@ -117,14 +226,69 @@
         }
 
         button {
-            padding: 5px 10px;
+            padding: 15px 10px;
             margin-right: 10px;
-            background-color: #fff;
+            background-color: transparent;
             color: black;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn {
+            color: #000;
+            display: block;
+            font-size:1rem;
+            line-height: 20px;
+            max-width: 160px; 
+            position: relative;
+            text-decoration: none;
+            text-transform: uppercase;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover { text-decoration: none; }
+        }
+
+        .cart-button,
+        .login-button {
+            font-family: 'Dosis', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            
+            svg {
+                height: 45px;
+                left: 0;
+                position: absolute;
+                width: 100%;
+            }
+            
+            rect {
+                fill: none;
+                stroke: #fff;
+                stroke-width: 0;
+                stroke-dasharray: 422, 0;
+                transition: all 0.35s linear;
+            }
+        }
+          
+        .cart-button:hover,
+        .login-button:hover {
+                letter-spacing: 2px;
+                color: #fff;
+                
+                rect {
+                    stroke-width: 5;
+                    stroke-dasharray: 10, 210;
+                    stroke-dashoffset: 48;
+                    transition: all 1.35s cubic-bezier(0.19, 1, 0.22, 1);
+                }
         }
     }
 }

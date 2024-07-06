@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { SlSocialFacebook  } from "react-icons/sl";
+import { SlSocialLinkedin } from "react-icons/sl";
+import { FaInstagram } from "react-icons/fa";
+import { CiTwitter } from "react-icons/ci";
 import '../styles/HomePage.scss';
 
 import image1 from "../img/image1.jpg";
@@ -105,10 +109,29 @@ const HomePage = () => {
 
                     <div className="social-media container">
                         <h2>Follow Us</h2>
-                        <a href="https://instagram.com">Instagram</a>
-                        <a href="https://twitter.com">X</a>
-                        <a href="https://facebook.com">Facebook</a>
-                        <a href="https://linkedin.com">LinkedIn</a>
+
+                        <div className='social-media-container'>
+                            <div className='social-media-icons icon-fill-ig'>
+                                <a href="https://instagram.com">
+                                    <FaInstagram />
+                                </a>
+                            </div>
+                            <div className='social-media-icons icon-fill-x'>
+                                <a href="https://twitter.com">
+                                    <CiTwitter />
+                                </a>
+                            </div>
+                            <div className='social-media-icons icon-fill-fb'>
+                                <a href="https://facebook.com">
+                                    <SlSocialFacebook  />
+                                </a>
+                            </div>
+                            <div className='social-media-icons icon-fill-li'>
+                                <a href="https://linkedin.com">
+                                    <SlSocialLinkedin />
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

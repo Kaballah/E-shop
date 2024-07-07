@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/ProductsPage.scss';
+import '../styles/HomeProducts.scss';
 
 const ProductsPage = () => {
     const [products, setProducts] = useState([]);

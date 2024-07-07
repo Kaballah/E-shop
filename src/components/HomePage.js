@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+// import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { SlSocialFacebook  } from "react-icons/sl";
 import { SlSocialLinkedin } from "react-icons/sl";
 import { FaInstagram } from "react-icons/fa";
@@ -75,9 +77,11 @@ const HomePage = () => {
                                         key={product.id}
                                         onClick={() => handleProductClick(product)}
                                     >
-                                        <img src={`http://localhost/ecommerce-api/${product.image}`} alt={product.name} />
-                                        <h3>{product.name}</h3>
-                                        <p>Ksh. {product.price}</p>
+                                        <Link to={`/product/${product.id}`}>
+                                            <img src={`http://localhost/ecommerce-api/${product.image}`} alt={product.name} />
+                                            <h3>{product.name}</h3>
+                                            <p>Ksh. {product.price}</p>
+                                        </Link>
                                     </div>
                                 ))}
                             </div>

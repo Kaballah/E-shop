@@ -1,0 +1,106 @@
+.product-page {
+    width: 75%;
+    margin: 0 auto;
+
+    nav {
+        margin: 20px 0;
+        background-color: transparent;
+        a {
+            text-decoration: none;
+            color: #000;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
+
+    .product-details {
+        display: flex;
+        justify-content: space-between;
+
+        .image-gallery {
+            display: flex;
+            flex-direction: column;
+
+            img {
+                cursor: pointer;
+                margin-bottom: 10px;
+                width: 60px;
+                height: 60px;
+                object-fit: scale-down;
+            }
+        }
+
+        .selected-image {
+            img {
+                width: 300px;
+                height: 300px;
+                object-fit: contain;
+            }
+        }
+
+        .product-info {
+            max-width: 300px;
+
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                margin: 10px 0;
+            }
+        }
+    }
+
+    .similar-products {
+        margin-top: 40px;
+
+        .products-slider {
+            display: flex;
+            overflow-x: auto;
+
+            .product {
+                margin-right: 20px;
+
+                img {
+                    width: 100px;
+                    height: 100px;
+                    object-fit: scale-down;
+                    display: flex;
+                    justify-content: center;
+                }
+
+                p {
+                    text-align: center;
+                    margin-top: 5px;
+                }
+            }
+        }
+    }
+
+    .reviews-section {
+        margin-top: 40px;
+        display: flex;
+
+        .general-overview {
+            flex: 1;
+            .rating-stars {
+                /* Add styles for rating stars */
+            }
+        }
+
+        .written-reviews {
+            flex: 1;
+            .review {
+                margin-bottom: 20px;
+                p {
+                    margin: 0;
+                }
+                strong {
+                    display: block;
+                    margin-top: 5px;
+                }
+            }
+        }
+    }
+}

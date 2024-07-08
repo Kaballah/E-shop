@@ -6,6 +6,7 @@ import { SlSocialLinkedin } from "react-icons/sl";
 import { FaInstagram } from "react-icons/fa";
 import { CiTwitter } from "react-icons/ci";
 import '../styles/HomePage.scss';
+// import LeftPanel from './LeftPanel';
 
 import image1 from "../img/image1.jpg";
 import image2 from "../img/image2.jpg";
@@ -40,6 +41,11 @@ const HomePage = () => {
         }
     }, [currentSlide]);
 
+    useEffect(() => {
+        const storedRecentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+        setRecentlyViewed(storedRecentlyViewed);
+    }, []);
+
     const handleProductClick = (product) => {
         const updatedRecentlyViewed = [...recentlyViewed];
         if (!updatedRecentlyViewed.find(item => item.id === product.id)) {
@@ -48,7 +54,10 @@ const HomePage = () => {
                 updatedRecentlyViewed.pop();
             }
             setRecentlyViewed(updatedRecentlyViewed);
+            localStorage.setItem('recentlyViewed', JSON.stringify(updatedRecentlyViewed));
         }
+
+        // console.log("Product clicked:", product);
     };
 
     return (
@@ -75,9 +84,9 @@ const HomePage = () => {
                                     <div 
                                         className="item" 
                                         key={product.id}
-                                        onClick={() => handleProductClick(product)}
+                                        // onClick={() => handleProductClick(product)}
                                     >
-                                        <Link to={`/product/${product.id}`}>
+                                        <Link to={`/product/${product.id}`} className='link' onClick={() => handleProductClick(product)}>
                                             <img src={`http://localhost/ecommerce-api/${product.image}`} alt={product.name} />
                                             <h3>{product.name}</h3>
                                             <p>Ksh. {product.price}</p>

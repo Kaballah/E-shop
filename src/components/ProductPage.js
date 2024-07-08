@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../styles/ProductPage.scss';
 
 const ProductPage = ({ match }) => {
+    const [category, setCategory] = useState([]);
     const [product, setProduct] = useState({});
     const [similarProducts, setSimilarProducts] = useState([]);
     const [reviews, setReviews] = useState([]);
@@ -13,32 +14,36 @@ const ProductPage = ({ match }) => {
 
     useEffect(() => {
         const fetchProductDetails = async () => {
-            const response = await axios.get(`http://localhost/ecommerce-api/getProductDetails.php?product_id=${id}`);
-            setProduct(response.data);
-            setSelectedImage(`http://localhost/ecommerce-api${response.data.image}`);
-        };
-
-        const fetchSimilarProducts = async () => {
-            const response = await axios.get(`http://localhost/ecommerce-api/getSimilarProducts.php?category=${product.category}&sub_category=${product.sub_category}`);
-            setSimilarProducts(response.data);
-        };
-
-        const fetchReviews = async () => {
-            const response = await axios.get(`http://localhost/ecommerce-api/getReviews.php?product_id=${id}`);
-            setReviews(response.data);
+            try {
+                const productResponse = await axios.get(`http://localhost/ecommerce-api/getProductDetails.php?product_id=${id}`);
+                const productData = productResponse.data;
+                setProduct(productData);
+                setSelectedImage(`http://localhost/ecommerce-api${productData.image}`);
+                
+                const categoryResponse = await axios.get(`http://localhost/ecommerce-api/getCategories.php?category_id=${productData.category_id}`);
+                setCategory(categoryResponse.data);
+                
+                if (product.category_id) {
+                    const similarProductsResponse = await axios.get(`http://localhost/ecommerce-api/getSimilarProducts.php?category_id=${productData.category_id}&id=${id}`);
+                    setSimilarProducts(similarProductsResponse.data);
+                }
+                
+                const reviewsResponse = await axios.get(`http://localhost/ecommerce-api/getReviews.php?product_id=${id}`);
+                setReviews(reviewsResponse.data);
+            } catch (error) {
+                console.error("Error fetching product details:", error);
+            }
         };
 
         fetchProductDetails();
-        fetchSimilarProducts();
-        fetchReviews();
-    }, [id, product.category, product.sub_category]);
+    }, [id, product.category_id]);
 
     return (
         <div className="product-page">
             <nav>
                 <a href="/">Home</a> / 
-                <a href={`/category/${product.category}`}>{product.category}</a> / 
-                <a href={`/category/${product.category}/${product.sub_category}`}>{product.sub_category}</a> / 
+                <a href={`/category/${category.category_name}`}>{category.category_name}</a> / 
+                <a href={`/category/${category.category_name}/${category.sub_category_name}`}>{category.sub_category_name}</a> / 
                 {product.name}
             </nav>
             <div className="product-details">
@@ -53,21 +58,23 @@ const ProductPage = ({ match }) => {
                 <div className="product-info">
                     <h1>{product.name}</h1>
                     <p>{product.description}</p>
-                    <p>Category: {product.category}</p>
+                    <p>Category: {category.category_name}</p>
                     <p>Price: ${product.price}</p>
                 </div>
             </div>
+
             <div className="similar-products">
                 <h2>Similar Products</h2>
                 <div className="products-slider">
-                    {similarProducts.map(similarProduct => (
+                    {similarProducts.length > 0 ? similarProducts.map(similarProduct => (
                         <div className="product" key={similarProduct.id}>
                             <img src={`http://localhost/ecommerce-api${similarProduct.image}`} alt={similarProduct.name} />
                             <p>{similarProduct.name}</p>
                         </div>
-                    ))}
+                    )) : <p>No similar products found.</p>}
                 </div>
             </div>
+            
             <div className="reviews-section">
                 <div className="general-overview">
                     <h2>Reviews</h2>
@@ -76,12 +83,12 @@ const ProductPage = ({ match }) => {
                     </div>
                 </div>
                 <div className="written-reviews">
-                    {/* {reviews.map(review => (
-                        <div className="review" key={review.id}>
-                            <p>{review.review_text}</p>
-                            <p><strong>{review.user_name}</strong> - {new Date(review.review_date).toLocaleDateString()}</p>
+                    {reviews.length > 0 ? reviews.map(reviews => (
+                        <div className="review" key={reviews.id}>
+                            <p>{reviews.review_text}</p>
+                            <p><strong>{reviews.user_name}</strong> - {new Date(reviews.review_date).toLocaleDateString()}</p>
                         </div>
-                    ))} */}
+                    )) : <p>No reviews available.</p>}
                 </div>
             </div>
         </div>

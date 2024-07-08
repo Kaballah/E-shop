@@ -48,6 +48,7 @@ $white: #ffffff;
 
                     .item {
                         padding: 10px;
+                        text-decoration: none;
                         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
                         transition: box-shadow 0.3s ease;
 
@@ -61,9 +62,15 @@ $white: #ffffff;
                             }
                         }
 
+                        .link {
+                            text-decoration: none;
+                            color: black;
+                        }
+
                         img {
                             width: 100%;
                             height: auto;
+                            text-decoration: none;
                             transition: transform 0.3s ease;
 
                             &:hover {

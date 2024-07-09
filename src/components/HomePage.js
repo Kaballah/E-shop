@@ -6,7 +6,8 @@ import { SlSocialLinkedin } from "react-icons/sl";
 import { FaInstagram } from "react-icons/fa";
 import { CiTwitter } from "react-icons/ci";
 import '../styles/HomePage.scss';
-// import LeftPanel from './LeftPanel';
+import { useRecentlyViewed, handleProductClick } from './HandleProductClick.js';
+import Footer from './Footer.js'
 
 import image1 from "../img/image1.jpg";
 import image2 from "../img/image2.jpg";
@@ -16,7 +17,7 @@ import image5 from "../img/image5.jpg";
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
-    const [recentlyViewed, setRecentlyViewed] = useState([]);
+    const [recentlyViewed, setRecentlyViewed] = useRecentlyViewed();
     const [error, setError] = useState(null);
     const [currentSlide, setCurrentSlide] = useState(0);
     const carouselRef = useRef(null);
@@ -40,25 +41,6 @@ const HomePage = () => {
             carouselRef.current.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
     }, [currentSlide]);
-
-    useEffect(() => {
-        const storedRecentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
-        setRecentlyViewed(storedRecentlyViewed);
-    }, []);
-
-    const handleProductClick = (product) => {
-        const updatedRecentlyViewed = [...recentlyViewed];
-        if (!updatedRecentlyViewed.find(item => item.id === product.id)) {
-            updatedRecentlyViewed.unshift(product);
-            if (updatedRecentlyViewed.length > 5) {
-                updatedRecentlyViewed.pop();
-            }
-            setRecentlyViewed(updatedRecentlyViewed);
-            localStorage.setItem('recentlyViewed', JSON.stringify(updatedRecentlyViewed));
-        }
-
-        // console.log("Product clicked:", product);
-    };
 
     return (
         <div className="home-page">
@@ -86,7 +68,7 @@ const HomePage = () => {
                                         key={product.id}
                                         // onClick={() => handleProductClick(product)}
                                     >
-                                        <Link to={`/product/${product.id}`} className='link' onClick={() => handleProductClick(product)}>
+                                        <Link to={`/product/${product.id}`} className='link' onClick={() => handleProductClick(product, recentlyViewed, setRecentlyViewed)}>
                                             <img src={`http://localhost/ecommerce-api/${product.image}`} alt={product.name} />
                                             <h3>{product.name}</h3>
                                             <p>Ksh. {product.price}</p>
@@ -149,9 +131,7 @@ const HomePage = () => {
                 </div>
             </div>
 
-            <footer>
-                <p>© 2024 E-shop. All rights reserved.</p>
-            </footer>
+            <Footer />
         </div>
     );
 }

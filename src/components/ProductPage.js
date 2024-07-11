@@ -18,6 +18,7 @@ const ProductPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { id } = useParams();
     const productsSliderRef = useRef(null);
+    const [transitioning, setTransitioning] = useState(false);
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -77,13 +78,15 @@ const ProductPage = () => {
     };
 
     const handleNavigation = (direction) => {
-        if (productsSliderRef.current) {
-            const width = productsSliderRef.current.clientWidth;
+        if (productsSliderRef.current && !transitioning) {
+            setTransitioning(true);
+            const productWidth = productsSliderRef.current.firstChild.clientWidth;
             productsSliderRef.current.style.transition = 'transform 0.5s ease';
+
             if (direction === 'left') {
-                productsSliderRef.current.style.transform = `translateX(${width}px)`;
+                productsSliderRef.current.style.transform = `translateX(${productWidth}px)`;
             } else {
-                productsSliderRef.current.style.transform = `translateX(-${width}px)`;
+                productsSliderRef.current.style.transform = `translateX(-${productWidth}px)`;
             }
 
             setTimeout(() => {
@@ -96,6 +99,7 @@ const ProductPage = () => {
                     newSimilarProducts.push(newSimilarProducts.shift());
                 }
                 setSimilarProducts(newSimilarProducts);
+                setTransitioning(false);
             }, 500);
         }
     };
@@ -132,18 +136,20 @@ const ProductPage = () => {
 
                 <div className="similar-products">
                     <h2>Similar Products</h2>
-                    <div className="products-slider" ref={productsSliderRef}>
-                        {similarProducts.slice(0, 5).map(similarProduct => (
-                            <Link to={`/product/${similarProduct.id}`} className='link' onClick={() => handleProductClick(similarProduct, recentlyViewed, setRecentlyViewed)}>
-                                <div className="product" key={similarProduct.id}>
-                                    <img src={`http://localhost/ecommerce-api${similarProduct.image}`} alt={similarProduct.name} />
-                                    <div className="product-title" data-full-title={similarProduct.name}>
-                                        {similarProduct.name}
+                    <div>
+                        <div ref={productsSliderRef} className='products-slider'>
+                            {similarProducts.slice(0, 5).map(similarProduct => (
+                                <Link to={`/product/${similarProduct.id}`} className='link' onClick={() => handleProductClick(similarProduct, recentlyViewed, setRecentlyViewed)} >
+                                    <div className="product" key={similarProduct.id} >
+                                        <img src={`http://localhost/ecommerce-api${similarProduct.image}`} alt={similarProduct.name} />
+                                        <div className="product-title" data-full-title={similarProduct.name}>
+                                            {similarProduct.name}
+                                        </div>
+                                        {/* <p>{similarProduct.name}</p> */}
                                     </div>
-                                    {/* <p>{similarProduct.name}</p> */}
-                                </div>
-                            </Link>
-                        ))}
+                                </Link>
+                            ))}
+                        </div>
                         {similarProducts.length > 5 && (
                             <div className='nav'>
                                 <button className="carousel-nav left" onClick={() => handleNavigation('left')}>{'<'}</button>

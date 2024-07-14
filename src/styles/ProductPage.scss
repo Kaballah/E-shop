@@ -186,11 +186,43 @@
         .general-overview {
             flex: 1;
 
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
             .rating-stars {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+
                 span {
                     cursor: pointer;
                     font-size: 24px;
                     margin-right: 5px;
+                }
+            }
+
+            .rating-breakdown {
+                margin-bottom: 1rem;
+
+                .rating-bar {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 0.5rem;
+
+                    .bar {
+                        flex-grow: 1;
+                        height: 1rem;
+                        background-color: #f0f0f0;
+                        margin: 0 0.5rem;
+                        border-radius: 0.5rem;
+                        overflow: hidden;
+
+                        .filled-bar {
+                            height: 100%;
+                            background-color: orange;
+                        }
+                    }
                 }
             }
 
@@ -202,11 +234,90 @@
         .written-reviews {
             flex: 2;
 
+            .sorting {
+                display: flex;
+                justify-content: flex-start;
+                margin-bottom: 1rem;
+
+                button {
+                    background: none;
+                    border: none;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-right: 1rem;
+                }
+            }
+
             .review {
-                margin-bottom: 20px;
+                // margin-bottom: 20px;
+                display: flex;
+                margin-bottom: 1rem;
+
+                .avatar {
+                    width: 50px;
+                    height: 50px;
+                    background-color: grey;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin-right: 1rem;
+                    color: white;
+                    font-size: 1.5rem;
+                }
+
+                .review-content {
+                    flex-grow: 1;
+
+                    .review-header {
+                        display: grid;
+                        align-items: center;
+                        margin-bottom: 0.5rem;
+
+                        .review-name {
+                            font-weight: bold;
+                            margin-right: 0.5rem;
+                        }
+
+                        .review-rating {
+                            color: orange;
+                            margin-right: 0.5rem;
+                        }
+
+                        .review-title {
+                            font-weight: bold;
+                            margin-right: 0.5rem;
+                        }
+
+                        .review-date {
+                            color: grey;
+                        }
+                    }
+
+                    .review-actions {
+                        display: flex;
+                        align-items: center;
+
+                        button {
+                            background: none;
+                            border: none;
+                            cursor: pointer;
+                            margin-right: 0.5rem;
+                        }
+
+                        .separator {
+                            width: 1px;
+                            height: 1rem;
+                            background-color: grey;
+                            margin: 0 0.5rem;
+                        }
+                    }
+                }
+
                 p {
                     margin: 0;
                 }
+
                 strong {
                     display: block;
                     margin-top: 5px;

@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/ProductPage.scss';
 import { handleProductClick, useRecentlyViewed } from './HandleProductClick.js';
+// import Rating from 'react-rating';
+import ProductRating from './ProductRating.js';
+import ReviewSection from './ReviewSection.js';
 import Modal from './Modal.js';
 import Footer from './Footer.js';
 
@@ -13,12 +16,16 @@ const ProductPage = () => {
     const [reviews, setReviews] = useState([]);
     const [selectedImage, setSelectedImage] = useState('');
     const [rating, setRating] = useState(0);
-    const [hoveredStar, setHoveredStar] = useState(null);
+    const [ratingBreakdown, setRatingBreakdown] = useState({});
+    // const [hoveredStar, setHoveredStar] = useState(null);
     const [recentlyViewed, setRecentlyViewed] = useRecentlyViewed();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [sortOrder, setSortOrder] = useState('top');
     const { id } = useParams();
     const productsSliderRef = useRef(null);
     const [transitioning, setTransitioning] = useState(false);
+    const navigate = useNavigate();
+    const [userRatings, setUserRatings] = useState({});
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -38,27 +45,50 @@ const ProductPage = () => {
 
                 const reviewsResponse = await axios.get(`http://localhost/ecommerce-api/getReviews.php?product_id=${id}`);
                 setReviews(reviewsResponse.data);
+
+                // const reviewCountsResponse = await axios.get(`http://localhost/ecommerce-api/getReviewCounts.php?product_id=${id}`);
+                // const reviewCountsData = reviewCountsResponse.data;
+                // setReviews(prevReviews => prevReviews.map(review => {
+                //     const countData = reviewCountsData.find(count => count.id === review.id);
+                //     return {
+                //         ...review,
+                //         helpful: countData ? countData.helpful : 0,
+                //         report: countData ? countData.report : 0,
+                //     };
+                // }));
+
+                const ratingResponse = await axios.get(`http://localhost/ecommerce-api/getProductRating.php?product_id=${id}`);
+                setRating(ratingResponse.data.rating);
+
+                const ratingBreakdownResponse = await axios.get(`http://localhost/ecommerce-api/getRatingBreakdown.php?product_id=${id}`);
+                setRatingBreakdown(ratingBreakdownResponse.data);
             } catch (error) {
                 console.error("Error fetching product details:", error);
             }
         };
 
         fetchProductDetails();
-    }, [id]);
 
-    const handleStarClick = (star) => {
-        setRating(star);
-        fetch(`http://localhost/ecommerce-api/save-review.php`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ productId: id, rating: star })
-        })
-        .then(response => response.json())
-        .then(data => {
-            setReviews([...reviews, data]);
-        })
-        .catch(err => console.error(err));
-    };
+        const fetchReviewCounts = async () => {
+            try {
+                const response = await axios.get(`http://localhost/ecommerce-api/getReviewCounts.php?product_id=${id}`);
+                const data = response.data;
+        
+                const updatedReviews = reviews.map(review => {
+                    const reviewData = data.find(r => r.id === review.id);
+                    return { ...review, helpful: reviewData.helpful, report: reviewData.report };
+                });
+                
+                setReviews(updatedReviews);
+            } catch (error) {
+                console.error("Error fetching review counts:", error);
+            }
+        };
+
+        fetchReviewCounts();
+    }, [id, reviews]);
+
+
 
     // Function to handle click on image preview
     const handleClickImage = () => {
@@ -70,12 +100,106 @@ const ProductPage = () => {
         setIsModalOpen(false); // Close the modal
     };
 
-    const getStarColor = (index) => {
-        if (hoveredStar !== null) {
-            return index < hoveredStar ? 'orange' : 'grey';
-        }
+    const getStarColor = (index, rating) => {
+        // setRating(rating);
         return index < rating ? 'orange' : 'grey';
     };
+
+    // const handleThumbClick = (reviewId, type) => {
+    //     setReviews(prevReviews => {
+    //         const updatedReviews = prevReviews.map(review => {
+    //             if (review.id === reviewId) {
+    //                 const userRating = userRatings[reviewId] || null;
+
+    //                 if (type === 'helpful') {
+    //                     if (userRating === 'helpful') {
+    //                         review.helpful -= 1;
+    //                         setUserRatings(prev => ({ ...prev, [reviewId]: null }));
+    //                     } else {
+    //                         if (userRating === 'report') {
+    //                             review.report -= 1;
+    //                         }
+    //                         review.helpful += 1;
+    //                         setUserRatings(prev => ({ ...prev, [reviewId]: 'helpful' }));
+    //                     }
+    //                 } else {
+    //                     if (userRating === 'report') {
+    //                         review.report -= 1;
+    //                         setUserRatings(prev => ({ ...prev, [reviewId]: null }));
+    //                     } else {
+    //                         if (userRating === 'helpful') {
+    //                             review.helpful -= 1;
+    //                         }
+    //                         review.report += 1;
+    //                         setUserRatings(prev => ({ ...prev, [reviewId]: 'report' }));
+    //                     }
+    //                 }
+    //             }
+    //             return review;
+    //         });
+    //         return updatedReviews;
+    //     });
+    // };
+
+    const handleThumbClick = async (reviewId, type) => {
+        const userId = 1; // Replace with actual user ID
+    
+        try {
+            const userRating = userRatings[reviewId] || null;
+            const action = userRating === type ? 'decrement' : 'increment';
+    
+            const response = await axios.post('http://localhost/ecommerce-api/updateReviewCount.php', {
+                review_id: reviewId,
+                type: type,
+                action: action,
+                user_id: userId
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (response.data.message === "Review count updated successfully.") {
+                setReviews(prevReviews => {
+                    return prevReviews.map(review => {
+                        if (review.id === reviewId) {
+                            const element = document.getElementById(`review-${reviewId}-${type}`);
+                            element.classList.remove("animate");
+                            void element.offsetWidth; // Trigger reflow
+                            element.classList.add("animate");
+
+                            if (type === 'helpful') {
+                                review.helpful += (action === 'increment' ? 1 : -1);
+                                if (userRating === 'report') {
+                                    review.report -= 1;
+                                }
+                                setUserRatings(prev => ({ ...prev, [reviewId]: action === 'increment' ? 'helpful' : null }));
+                            } else {
+                                review.report += (action === 'increment' ? 1 : -1);
+                                if (userRating === 'helpful') {
+                                    review.helpful -= 1;
+                                }
+                                setUserRatings(prev => ({ ...prev, [reviewId]: action === 'increment' ? 'report' : null }));
+                            }
+                        }
+                        return review;
+                    });
+                });
+            } else {
+                console.error("Failed to update review count.");
+            }
+        } catch (error) {
+            console.error("Error updating review count:", error);
+        }
+    };
+
+    const sortedReviews = reviews.sort((a, b) => {
+        if (sortOrder === 'top') {
+            return b.helpful - a.helpful;
+        } else {
+            return new Date(b.review_date) - new Date(a.review_date);
+        }
+    });
 
     const handleNavigation = (direction) => {
         if (productsSliderRef.current && !transitioning) {
@@ -166,29 +290,93 @@ const ProductPage = () => {
                 </div>
 
                 <div className="reviews-section">
-                    <div className="general-overview" style={{ width: '25%' }}>
-                        <h2>Reviews</h2>
+                    <div className="general-overview" style={{ width: '30%' }}>
+                        <h2>Customer Review</h2>
                         <div className="rating-stars">
-                            {[1, 2, 3, 4, 5].map((star, index) => (
-                                <span
-                                    key={index}
-                                    style={{ color: getStarColor(index) }}
-                                    onMouseEnter={() => setHoveredStar(index + 1)}
-                                    onMouseLeave={() => setHoveredStar(null)}
-                                    onClick={() => handleStarClick(star)}
-                                >
-                                    ★
-                                </span>
-                            ))}
+
+                        <ProductRating/>
+
+                            {/* {rating % 1 !== 0 && (
+                                <span style={{ color: 'orange' }}>★</span>
+                            )}
+                            {rating % 1 === 0 && (
+                                <span style={{ color: 'grey' }}>★</span>
+                            )} */}
                         </div>
-                        <p>{rating} / 5</p>
+
+                        {/* <p>{rating} out of 5.0</p> */}
+
+                        <div className="rating-breakdown">
+                            {[5, 4, 3, 2, 1].map(star => {
+                                // const count = reviews.filter(review => review.rating === star).length;
+                                // const percentage = (count / reviews.length) * 100;
+
+                                const count = ratingBreakdown[star] || 0;
+                                const percentage = (count / reviews.length) * 100;
+                                return (
+                                    <div key={star} className="rating-bar">
+                                        <span>{star} stars</span>
+                                        <div className="bar">
+                                            <div className="filled-bar" style={{ width: `${percentage}%` }}></div>
+                                        </div>
+                                        <span>{percentage.toFixed(0)}%</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <button onClick={() => navigate('/writeReview')}>Write a Review</button>
                     </div>
-                    <div className="written-reviews" style={{ width: '75%' }}>
-                        {reviews.length > 0 ? reviews.map(review => (
-                            <div className="review" key={review.id}>
+                    <div className="written-reviews" style={{ width: '65%' }}>
+                        <div className="sorting">
+                            <button onClick={() => setSortOrder('top')}>Top Reviews</button>
+                            <button onClick={() => setSortOrder('recent')}>Recent Reviews</button>
+                        </div>
+                        {sortedReviews.length > 0 ? sortedReviews.map(review => (
+                        <div className="review" key={review.id}>
+                            <div className="avatar">A</div>
+
+                            <div className="review-content">
+                                <div className="review-header">
+                                    <span className="review-name">{review.user_name}</span>
+                                    <span className="review-rating">
+                                        {[1, 2, 3, 4, 5].map((star, index) => (
+                                            <span
+                                                key={index}
+                                                style={{ color: getStarColor(index, review.rating) }}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </span>
+                                    <span className="review-title"><b>{review.review_title}</b></span>
+                                    <span className="review-date" style={{ color: 'grey' }}>{new Date(review.review_date).toLocaleDateString()}</span>
+                                </div>
                                 <p>{review.review_text}</p>
-                                <p><strong>{review.user_name}</strong> - {new Date(review.review_date).toLocaleDateString()}</p>
+                                <div className="review-actions">
+                                    {/* <button 
+                                        className={`thumbs-up ${userRatings[review.id] === 'helpful' ? 'active' : ''}`}
+                                        onClick={() => handleThumbClick(review.id, 'helpful')}
+                                    >
+                                        👍 <span className="count">{review.helpful}</span>
+                                    </button>
+                                    <span className="separator"></span>
+                                    <button 
+                                        className={`thumbs-down ${userRatings[review.id] === 'report' ? 'active' : ''}`}
+                                        onClick={() => handleThumbClick(review.id, 'report')}
+                                    >
+                                        👎 <span className="count">{review.report}</span>
+                                    </button> */}
+
+                                    <button onClick={() => handleThumbClick(review.id, 'helpful')}>
+                                        <span id={`review-${review.id}-helpful`}>{review.helpful}</span> 👍
+                                    </button>
+                                    <button onClick={() => handleThumbClick(review.id, 'report')}>
+                                        <span id={`review-${review.id}-report`}>{review.report}</span> 👎
+                                    </button>
+                                </div>
                             </div>
+                        </div>
                         )) : <p>No reviews available.</p>}
                     </div>
                 </div>

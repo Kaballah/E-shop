@@ -12,6 +12,9 @@ import Footer from './Footer.js';
 const ProductPage = () => {
     const [category, setCategory] = useState({});
     const [product, setProduct] = useState({});
+    const [description, setDescription] = useState([]);
+    const [itemsRemaining, setItemsRemaining] = useState(product.items_remaining);
+    const [cartQuantity, setCartQuantity] = useState(0);
     const [similarProducts, setSimilarProducts] = useState([]);
     const [reviews, setReviews] = useState([]);
     const [selectedImage, setSelectedImage] = useState('');
@@ -86,7 +89,23 @@ const ProductPage = () => {
         };
 
         fetchReviewCounts();
+
+        const savedUserRatings = localStorage.getItem('userRatings');
+        if (savedUserRatings) {
+            setUserRatings(JSON.parse(savedUserRatings));
+        }
     }, [id, reviews]);
+
+    useEffect(() => {
+        axios.get(`/getProductDescription.php?product_id=${product.id}`)
+            .then(response => {
+                const descriptionList = response.data.description.split('\n').map((item, index) => (
+                    <li key={index}>{item.replace('• ', '')}</li>
+                ));
+                setDescription(descriptionList);
+            })
+            .catch(error => console.error('Error fetching product description:', error));
+    }, [product.id]);
 
 
 
@@ -98,6 +117,18 @@ const ProductPage = () => {
     // Function to close the modal
     const handleCloseModal = () => {
         setIsModalOpen(false); // Close the modal
+    };
+
+    const addToCart = () => {
+        setCartQuantity(cartQuantity + 1);
+        setItemsRemaining(itemsRemaining - 1);
+    };
+
+    const removeFromCart = () => {
+        if (cartQuantity > 0) {
+            setCartQuantity(cartQuantity - 1);
+            setItemsRemaining(itemsRemaining + 1);
+        }
     };
 
     const getStarColor = (index, rating) => {
@@ -169,15 +200,15 @@ const ProductPage = () => {
                             element.classList.add("animate");
 
                             if (type === 'helpful') {
-                                review.helpful += (action === 'increment' ? 1 : -1);
+                                review.helpful += (action === 'increment' ? 1 : (review.helpful > 0 ? -1 : 0));
                                 if (userRating === 'report') {
-                                    review.report -= 1;
+                                    review.report -= (review.report > 0 ? 1 : 0);
                                 }
                                 setUserRatings(prev => ({ ...prev, [reviewId]: action === 'increment' ? 'helpful' : null }));
                             } else {
-                                review.report += (action === 'increment' ? 1 : -1);
+                                review.report += (action === 'increment' ? 1 : (review.report > 0 ? -1 : 0));
                                 if (userRating === 'helpful') {
-                                    review.helpful -= 1;
+                                    review.helpful -= (review.helpful > 0 ? 1 : 0);
                                 }
                                 setUserRatings(prev => ({ ...prev, [reviewId]: action === 'increment' ? 'report' : null }));
                             }
@@ -185,6 +216,8 @@ const ProductPage = () => {
                         return review;
                     });
                 });
+
+                localStorage.setItem('userRatings', JSON.stringify(userRatings));
             } else {
                 console.error("Failed to update review count.");
             }
@@ -251,10 +284,48 @@ const ProductPage = () => {
 
                     <div className="product-info">
                         <h1>{product.name}</h1>
-                        <p>{product.description}</p>
+
+                        <div className="product-details">
+                            <a href="#rating-section" className="product-rating-link">
+                                {product.rating} Stars
+                            </a>
+
+                            <a href="#w" className="product-brand-link">
+                                {product.brand}
+                            </a>
+
+                            <span className="items-remaining">
+                                {itemsRemaining} items remaining
+                            </span>
+                        </div>
+
+                        <hr className="separator" />
+
+                        <h2>Description</h2>
+
+                        <ul className="product-description">
+                            {product.description}
+                        </ul>
+
+                        <button 
+                            className="add-to-cart-button" 
+                            onClick={addToCart} 
+                            disabled={itemsRemaining === 0}
+                        >
+                            {cartQuantity === 0 ? 'Add to Cart' : (
+                                <>
+                                    <button className="cart-quantity-btn" onClick={removeFromCart}>-</button>
+                                    {cartQuantity}
+                                    <button className="cart-quantity-btn" onClick={addToCart}>+</button>
+                                </>
+                            )}
+                        </button>
+
+                        {/* <p>{product.description}</p>
+
                         <p>Category: {category.category_name}</p>
                         <p>Price: ${product.price}</p>
-                        <p>Brand: {product.brand}</p>
+                        <p>Brand: {product.brand}</p> */}
                     </div>
                 </div>
 
@@ -327,6 +398,7 @@ const ProductPage = () => {
 
                         <button onClick={() => navigate('/writeReview')}>Write a Review</button>
                     </div>
+                    
                     <div className="written-reviews" style={{ width: '65%' }}>
                         <div className="sorting">
                             <button onClick={() => setSortOrder('top')}>Top Reviews</button>

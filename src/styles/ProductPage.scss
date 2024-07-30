@@ -311,6 +311,49 @@
                             background-color: grey;
                             margin: 0 0.5rem;
                         }
+
+                        .thumbs-up, .thumbs-down {
+                            position: relative;
+                            .count {
+                                display: inline-block;
+                                transition: transform 0.3s ease, opacity 0.3s ease;
+                            }
+                        }
+                        
+                        .thumbs-up.active .count,
+                        .thumbs-down.active .count {
+                            transform: scale(0.9);
+                        }
+                        
+                        @keyframes slideUp {
+                            0% {
+                                transform: translateY(100%);
+                                opacity: 0;
+                            }
+                            100% {
+                                transform: translateY(0);
+                                opacity: 1;
+                            }
+                        }
+                        
+                        @keyframes slideDown {
+                            0% {
+                                transform: translateY(-100%);
+                                opacity: 0;
+                            }
+                            100% {
+                                transform: translateY(0);
+                                opacity: 1;
+                            }
+                        }
+                        
+                        .thumbs-up .count, .thumbs-down .count {
+                            display: inline-block;
+                        }
+                        
+                        .thumbs-up.active .count, .thumbs-down.active .count {
+                            animation: slideUp 0.3s forwards;
+                        }
                     }
                 }
 
